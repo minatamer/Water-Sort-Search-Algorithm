@@ -1,19 +1,31 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.awt.Point;
 
 public abstract class GenericSearch {
 
-	private ArrayList<Node> nodes = new ArrayList<>();
-	private ArrayList<Point> operators = new ArrayList<>();
+	private ArrayList<Node> nodes;
+	private ArrayList<Point> operators;
+	private Problem problem;
 	
-	public GenericSearch(ArrayList<Node> nodes, ArrayList<Point> operators) {
-		this.nodes = nodes;
-		this.operators = operators;
+	public GenericSearch(Problem problem) {
+		this.nodes = new ArrayList<>();
+		this.operators = new ArrayList<>();
+		this.problem = problem;
+		
 	}
 
-    public ArrayList<Node> getNodes() {
+    public Problem getProblem() {
+		return problem;
+	}
+
+	public void setProblem(Problem problem) {
+		this.problem = problem;
+	}
+
+	public ArrayList<Node> getNodes() {
 		return nodes;
 	}
 
@@ -31,53 +43,31 @@ public abstract class GenericSearch {
 
 
 
-    abstract Boolean goalTest (Node current);
+    abstract boolean goalTest (Node current);
     
     abstract Object applyOperator (Node current, Point operator);
     
-	abstract ArrayList<Point> getOperators (Node current);
+    abstract Object getOperators(Node current);
+	
+	abstract ArrayList<Node> expand(Node node);
     
-    private ArrayList<Node> expand(Node node, ArrayList<Point> operators) {
-    	ArrayList<Node> children = new ArrayList<>();
-        for (Point operator : operators) {
-            Object newState = applyOperator(node, operator);
-            if (newState != null) {
-                Node childNode = new Node(newState, node, operator, node.getDepth() + 1, node.getPathCost() + 1);
-                children.add(childNode);
-            }
-        }
-        return children;
-    }
-    
-	public Node generalSearch(Node root, String searchAlgorithm) {
+	public void enqueue(ArrayList<Node> expandedNodes , String strategy) {
         
-		nodes.add(root);
-        while (true) {
-            if (nodes.isEmpty()) {
-                return null; 
-            }
-            
-            Node node = nodes.remove(0);
-            
-            if (goalTest(node)) {
-                return node;
-            }
-            ArrayList<Node> children = expand(node, operators);
-            
-            //Switch on searchAlgorithm 
-            switch(searchAlgorithm) {
+            switch(strategy) {
             	case "BF":  
-            		 for (Node child : children) {
-                         nodes.add(child); 
-                     }
+            		nodes.addAll(expandedNodes);
                      break;
             	case "DF":
-           		 for (Node child : children) {
-                     nodes.add(0, child);
-                 }
-                 break;
-            	case "ID":break;
-            	case "UC":break;
+            		nodes.addAll(0, expandedNodes);
+                    break;
+            	case "ID":
+            		nodes.addAll(0, expandedNodes);
+            		break;
+            	
+            	case "UC":
+            		nodes.addAll(expandedNodes);
+            		nodes.sort(Comparator.comparingInt(Node::getPathCost));
+            		break;
             	case "GR1":break;
             	case "GR2":break;
             	case "AS1":break;
@@ -88,4 +78,4 @@ public abstract class GenericSearch {
 	}
     
 
-}
+
