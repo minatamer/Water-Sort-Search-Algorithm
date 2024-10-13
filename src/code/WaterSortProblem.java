@@ -28,7 +28,7 @@ public class WaterSortProblem extends Problem {
 	}
 
 	@Override
-	int getPathCost(Node current , int currentCost) {
+	int calculatePathCost(Node current , int currentCost) {
 		int parentCost = 0;
 		if(current.getParent() != null) {
 			parentCost = current.getParent().getPathCost();
