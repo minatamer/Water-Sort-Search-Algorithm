@@ -3,7 +3,7 @@ package code;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
+import java.util.HashSet;
 
 public class WaterSortSearch extends GenericSearch{
 
@@ -47,69 +47,35 @@ public class WaterSortSearch extends GenericSearch{
 	        return result;
 	    }
 	   
-	   private int calculateCumulativeCost(Node current, Point operator) {
-		   ArrayList<ArrayList<String>> newState = deepCopyState((ArrayList<ArrayList<String>>) current.getState());
-
-		    ArrayList<String> sourceBottle = newState.get(operator.x);
-		    ArrayList<String> sinkBottle = newState.get(operator.y);
-
-		    // Calculate the number of empty layers in the sink
-		    int emptyLayersInSink = countEmptyLayers(sinkBottle);
-
-		    // Calculate the number of pourable layers from the source (same color on top)
-		    int pourableLayersInSource = countPourableLayers(sourceBottle);
-
-
-		    // Determine the number of layers to pour
-		    int layersToPour = Math.min(emptyLayersInSink, pourableLayersInSource);
-		   
-		    int cost = layersToPour;
-		    
-//		    int cumulativeCost = this.getProblem().calculatePathCost(current, cost); 
-		    
-	
-		    int cumulativeCost = current.getPathCost() + cost;
-		    
-		    return cumulativeCost;
-	   }
+//	   private int calculateCumulativeCost(Node current, Point operator) {
+//		   ArrayList<ArrayList<String>> newState = deepCopyState((ArrayList<ArrayList<String>>) current.getState());
+//		    ArrayList<String> sourceBottle = newState.get(operator.x);
+//		    ArrayList<String> sinkBottle = newState.get(operator.y);
+//		    int emptyLayersInSink = countEmptyLayers(sinkBottle);
+//		    int pourableLayersInSource = countPourableLayers(sourceBottle);
+//		    int layersToPour = Math.min(emptyLayersInSink, pourableLayersInSource);
+//		    int cost = layersToPour;
+//		    int cumulativeCost = current.getPathCost() + cost;
+//		    return cumulativeCost;
+//	   }
 	   
 	   @Override
 	   Object applyOperator(Node current, Point operator) {
-		    // Clone the current state to avoid modifying the original state directly
 		    ArrayList<ArrayList<String>> newState = deepCopyState((ArrayList<ArrayList<String>>) current.getState());
-
 		    ArrayList<String> sourceBottle = newState.get(operator.x);
 		    ArrayList<String> sinkBottle = newState.get(operator.y);
-
-		    // Calculate the number of empty layers in the sink
 		    int emptyLayersInSink = countEmptyLayers(sinkBottle);
-
-		    // Calculate the number of pourable layers from the source (same color on top)
 		    int pourableLayersInSource = countPourableLayers(sourceBottle);
-
-
-		    // Determine the number of layers to pour
 		    int layersToPour = Math.min(emptyLayersInSink, pourableLayersInSource);
-		   
-		    int cost = layersToPour;
 		    
-		    int cumulativeCost = this.getProblem().calculatePathCost(current, cost); 
-		    
-		 
-		    
-
-		    // Pour the layers from source to sink
 		    for (int i = 0; i < layersToPour; i++) {
-		        // Find the topmost pourable layer from the source
 		        String layer = removeTopLayer(sourceBottle);
-		        // Add the layer to the sink
 		        addLayerToSink(sinkBottle, layer);
 		    }
 
 		    return newState;
 		}
 
-		// Helper method to count the number of empty layers in a bottle
 		private int countEmptyLayers(ArrayList<String> bottle) {
 		    int count = 0;
 		    for (String layer : bottle) {
@@ -120,35 +86,33 @@ public class WaterSortSearch extends GenericSearch{
 		    return count;
 		}
 
-		// Helper method to count the number of pourable layers (same color) from the top of the source bottle
 		private int countPourableLayers(ArrayList<String> bottle) {
 		    String topColor = getTopLayer(bottle);
 		    int count = 0;
 		    for (int i = 0; i < bottle.size(); i++) {
 		        if (bottle.get(i).equals("e")) {
-		            continue; // Skip empty layers
+		            continue; 
 		        }
 		        if (!bottle.get(i).equals(topColor)) {
-		            break; // Stop if we find a different color
+		            break; 
 		        }
 		        count++;
 		    }
 		    return count;
 		}
 
-		// Helper method to remove the topmost pourable layer from a bottle
 		private String removeTopLayer(ArrayList<String> bottle) {
 		    for (int i = 0; i < bottle.size(); i++) {
 		        if (!bottle.get(i).equals("e")) {
 		            String layer = bottle.get(i);
-		            bottle.set(i, "e"); // Set the removed layer to empty ("e")
+		            bottle.set(i, "e");
 		            return layer;
 		        }
 		    }
-		    return "e"; // Return "e" if nothing to pour
+		    return "e"; 
 		}
 
-		// Helper method to add a layer to the top of the sink bottle
+
 		private void addLayerToSink(ArrayList<String> sinkBottle, String layer) {
 		    for (int i = sinkBottle.size()-1 ; i >= 0; i--) {
 		        if (sinkBottle.get(i).equals("e")) {
@@ -158,7 +122,7 @@ public class WaterSortSearch extends GenericSearch{
 		    }
 		}
 
-		// Helper method to deep copy the state (to avoid modifying the original state)
+
 		private ArrayList<ArrayList<String>> deepCopyState(ArrayList<ArrayList<String>> state) {
 		    ArrayList<ArrayList<String>> newState = new ArrayList<>();
 		    for (ArrayList<String> bottle : state) {
@@ -219,12 +183,13 @@ public class WaterSortSearch extends GenericSearch{
 	                return bottle.get(i);
 	            }
 	        }
-	        return "e"; // Return "e" if the bottle is empty
+	        return "e"; 
 	    }
 
 		@Override		
 	    ArrayList<Node> expand(String strategy, Node node) {
 			ArrayList<Point> operators = getOperators(node);
+			this.getProblem().getOperators().addAll(operators);
 //			System.out.println(operators);
 	    	ArrayList<Node> children = new ArrayList<>();
 	        for (Point operator : operators) {
@@ -232,18 +197,18 @@ public class WaterSortSearch extends GenericSearch{
 	            if (newState != null) {
 	        		int heuristicValue = 0;
 	        		if (strategy.equals("GR1")) {
-	        			heuristicValue = heuristicNonUniformBottles(newState);
+	        			heuristicValue = heuristicMixedColors(newState);
 	        		}
 	        		if (strategy.equals("GR2")) {
 	        			heuristicValue = heuristicEmptyLayers(newState);
 	        		}
 	        		if (strategy.equals("AS1")) {
-	        			heuristicValue = heuristicNonUniformBottles(newState);
+	        			heuristicValue = heuristicMixedColors(newState);
 	        		}
 	        		if (strategy.equals("AS2")) {
 	        			heuristicValue = heuristicEmptyLayers(newState);
 	        		}
-	        		int cost = calculateCumulativeCost(node, operator);
+	        		int cost = this.getProblem().calculatePathCost(node, operator);
 	                Node childNode = new Node(newState, node, operator, node.getDepth() + 1, cost , heuristicValue);
 	                children.add(childNode);
 	            }
@@ -269,11 +234,31 @@ public class WaterSortSearch extends GenericSearch{
 		    return solutionPath.toString() + ";" + solutionNode.getPathCost() + ";" + numOfExpandedNodes ; 
 		}
 		
+		public String visualize(Node solutionNode ){
+		    StringBuilder solutionPath = new StringBuilder();
+		    Node currentNode = solutionNode;
+		    
+		    while (currentNode.getParent() != null) {
+		    	solutionPath.insert(0, "Current State: " + currentNode.getState());
+		        Point operator = currentNode.getOperator(); 
+		        if (operator != null) {
+		            solutionPath.insert(0, "pour_" + operator.x + "_" + operator.y + ",");
+		        }
+		        solutionPath.insert(0, "\n");
+		        currentNode = currentNode.getParent();
+		    }
+		    if (solutionPath.length() > 0) { //remove comma at the end
+		        solutionPath.setLength(solutionPath.length() - 1);
+		    }
+		    solutionPath.insert(0, "Initial State: " + this.getProblem().getInitialState() );
+
+		    return solutionPath.toString();
+		}
+		
 		public static int heuristicEmptyLayers(ArrayList<ArrayList<String>> state) {
 		    int emptyLayers = 0;
 
 		    for (ArrayList<String> bottle : state) {
-		        // Count the empty layers in each bottle
 		        for (String layer : bottle) {
 		            if (layer.equals("e")) {
 		                emptyLayers++;
@@ -281,31 +266,45 @@ public class WaterSortSearch extends GenericSearch{
 		        }
 		    }
 
-		    // The more empty layers, the easier the rearranging, so we use this as our heuristic
 		    return emptyLayers;
 		}
 		
-		public static int heuristicNonUniformBottles(ArrayList<ArrayList<String>> state) {
-		    int nonUniformBottles = 0;
-
+//		public static int heuristicNonUniformBottles(ArrayList<ArrayList<String>> state) {
+//		    int nonUniformBottles = 0;
+//
+//		    for (ArrayList<String> bottle : state) {
+//		        String topColor = bottle.get(0);
+//		        boolean isUniform = true;
+//
+//		        for (String color : bottle) {
+//		            if (!color.equals(topColor)) {
+//		                isUniform = false;
+//		                break;
+//		            }
+//		        }
+//
+//		        if (!isUniform) {
+//		            nonUniformBottles++;
+//		        }
+//		    }
+//
+//		    return nonUniformBottles;
+//		}
+		
+		
+		public static int heuristicMixedColors(ArrayList<ArrayList<String>> state) {
+		    int totalDistinctColors = 0;
 		    for (ArrayList<String> bottle : state) {
-		        // Check if the bottle is empty or contains only one color
-		        String topColor = bottle.get(0);
-		        boolean isUniform = true;
-
+		        HashSet<String> uniqueColorsInBottle = new HashSet<>();
 		        for (String color : bottle) {
-		            if (!color.equals(topColor)) {
-		                isUniform = false;
-		                break;
+		            if (!color.equals("e")) { 
+		                uniqueColorsInBottle.add(color);
 		            }
 		        }
-
-		        if (!isUniform) {
-		            nonUniformBottles++;
-		        }
+		        totalDistinctColors += uniqueColorsInBottle.size();
 		    }
 
-		    return nonUniformBottles;
+		    return totalDistinctColors;
 		}
 
 
@@ -317,13 +316,13 @@ public class WaterSortSearch extends GenericSearch{
 		ArrayList<ArrayList<String>> state = createState(initialState);
 		int heuristicValue = 0;
 		if (strategy.equals("GR1")) {
-			heuristicValue = heuristicNonUniformBottles(state);
+			heuristicValue = heuristicMixedColors(state);
 		}
 		if (strategy.equals("GR2")) {
 			heuristicValue = heuristicEmptyLayers(state);
 		}
 		if (strategy.equals("AS1")) {
-			heuristicValue = heuristicNonUniformBottles(state);
+			heuristicValue = heuristicMixedColors(state);
 		}
 		if (strategy.equals("AS2")) {
 			heuristicValue = heuristicEmptyLayers(state);
@@ -335,7 +334,7 @@ public class WaterSortSearch extends GenericSearch{
 		search.getNodes().add(root);
 		
 		while(true){
-			if (search.getNodes().isEmpty()) return "NOSOLUTION;";
+			if (search.getNodes().isEmpty()) return "NOSOLUTION";
 			//First: dequeue and repeat loop
 			Node current = search.getNodes().get(0);
 			search.getNodes().remove(0);
@@ -346,8 +345,12 @@ public class WaterSortSearch extends GenericSearch{
 //			System.out.println(result);
 			
 			if (result == true) {
-				System.out.println(current);
+//				System.out.println(current);
 				String resultString = getSolutionPath(current , search.getNumOfExpandedNodes());
+				if (visualize == true) {
+					String visualizeString = search.visualize(current);
+					System.out.println(visualizeString);
+				}
 				return resultString;
 			}
 			
@@ -367,7 +370,7 @@ public class WaterSortSearch extends GenericSearch{
 	    				while (iterator.hasNext()) {
 	    				    Node node = iterator.next();
 	    				    if (problem.getStateSpace().contains(node.getState())) {
-	    				        iterator.remove(); // Use the iterator's remove method
+	    				        iterator.remove(); 
 	    				    } else {
 	    				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
 	    				    }
@@ -382,7 +385,7 @@ public class WaterSortSearch extends GenericSearch{
 				while (iterator.hasNext()) {
 				    Node node = iterator.next();
 				    if (problem.getStateSpace().contains(node.getState())) {
-				        iterator.remove(); // Use the iterator's remove method
+				        iterator.remove(); 
 				    } else {
 				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
 				    }
@@ -399,10 +402,6 @@ public class WaterSortSearch extends GenericSearch{
 	
 	
 	public static void main (String[] args) {
-//		Scanner scanner = new Scanner(System.in);
-//		System.out.print("Enter initial state: ");
-//		String initialState = scanner.next();
-		
 		//Simple example 1 to see if it works
 	    String ex1 = "3;" +
 	            "4;" +
@@ -412,14 +411,7 @@ public class WaterSortSearch extends GenericSearch{
 	    String ex2 = "4;" +
 	            "4;" +
 	            "b,b,y,y;" + "b,b,y,y;" +"e,e,e,e;" +"e,e,e,e;";
-
-//
-//	    String grid0 = "5;" +
-//	            "4;" +
-//	            "b,y,r,b;" + "b,y,r,r;" +
-//	            "y,r,b,y;" + "e,e,e,e;" + "e,e,e,e;";
-		
-	    
+			    
 	    String grid0 = "3;" +
 	            "4;" +
 	            "r,y,r,y;" +

@@ -1,19 +1,18 @@
 package code;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.HashSet;
+import java.awt.Point;
 
 public abstract class Problem {
 
     private Object initialState;
-    private ArrayList<String> operators;
+    private HashSet<Point> operators;
 	private HashSet<ArrayList<ArrayList<String>> > stateSpace;
 
     public Problem(Object initialState) {
         this.initialState = initialState;
-        this.operators = new ArrayList<>();
+        this.operators = new HashSet<>();
         this.stateSpace = new HashSet<>();
     }
 
@@ -22,11 +21,11 @@ public abstract class Problem {
     }
 
 
-    public ArrayList<String> getOperators() {
+    public HashSet<Point> getOperators() {
 		return operators;
 	}
 
-	public void setOperators(ArrayList<String> operators) {
+	public void setOperators(HashSet<Point> operators) {
 		this.operators = operators;
 	}
 
@@ -44,6 +43,6 @@ public abstract class Problem {
 
 	abstract boolean isGoalState(Object state);
 
-    abstract int calculatePathCost(Node current , int currentCost);
+    abstract int calculatePathCost(Node current , Point operator);
 
 }

@@ -8,13 +8,11 @@ import java.util.HashSet;
 public abstract class GenericSearch {
 
 	private ArrayList<Node> nodes;
-	private ArrayList<Point> operators;
 	private Problem problem;
 	private int numOfExpandedNodes;
 
 	public GenericSearch(Problem problem) {
 		this.nodes = new ArrayList<>();
-		this.operators = new ArrayList<>();
 		this.problem = problem;
 		this.numOfExpandedNodes = 0;
 		
@@ -43,16 +41,6 @@ public abstract class GenericSearch {
 	public void setNodes(ArrayList<Node> nodes) {
 		this.nodes = nodes;
 	}
-
-	public ArrayList<Point> getOperators() {
-		return operators;
-	}
-
-	public void setOperators(ArrayList<Point> operators) {
-		this.operators = operators;
-	}
-
-
 
     abstract boolean goalTest (Node current);
     
