@@ -200,13 +200,13 @@ public class WaterSortSearch extends GenericSearch{
 	        			heuristicValue = heuristicMixedColors(newState);
 	        		}
 	        		if (strategy.equals("GR2")) {
-	        			heuristicValue = heuristicEmptyLayers(newState);
+	        			heuristicValue = heuristicMismatchBottles(newState);
 	        		}
 	        		if (strategy.equals("AS1")) {
 	        			heuristicValue = heuristicMixedColors(newState);
 	        		}
 	        		if (strategy.equals("AS2")) {
-	        			heuristicValue = heuristicEmptyLayers(newState);
+	        			heuristicValue = heuristicMismatchBottles(newState);
 	        		}
 	        		int cost = this.getProblem().calculatePathCost(node, operator);
 	                Node childNode = new Node(newState, node, operator, node.getDepth() + 1, cost , heuristicValue);
@@ -255,41 +255,41 @@ public class WaterSortSearch extends GenericSearch{
 		    return solutionPath.toString();
 		}
 		
-		public static int heuristicEmptyLayers(ArrayList<ArrayList<String>> state) {
-		    int emptyLayers = 0;
-
-		    for (ArrayList<String> bottle : state) {
-		        for (String layer : bottle) {
-		            if (layer.equals("e")) {
-		                emptyLayers++;
-		            }
-		        }
-		    }
-
-		    return emptyLayers;
-		}
-		
-//		public static int heuristicNonUniformBottles(ArrayList<ArrayList<String>> state) {
-//		    int nonUniformBottles = 0;
+//		public static int heuristicEmptyLayers(ArrayList<ArrayList<String>> state) {
+//		    int emptyLayers = 0;
 //
 //		    for (ArrayList<String> bottle : state) {
-//		        String topColor = bottle.get(0);
-//		        boolean isUniform = true;
-//
-//		        for (String color : bottle) {
-//		            if (!color.equals(topColor)) {
-//		                isUniform = false;
-//		                break;
+//		        for (String layer : bottle) {
+//		            if (layer.equals("e")) {
+//		                emptyLayers++;
 //		            }
-//		        }
-//
-//		        if (!isUniform) {
-//		            nonUniformBottles++;
 //		        }
 //		    }
 //
-//		    return nonUniformBottles;
+//		    return emptyLayers;
 //		}
+		
+		public static int heuristicMismatchBottles(ArrayList<ArrayList<String>> state) {
+		    int nonUniformBottles = 0;
+
+		    for (ArrayList<String> bottle : state) {
+		        String topColor = bottle.get(0);
+		        boolean isUniform = true;
+
+		        for (String color : bottle) {
+		            if (!color.equals(topColor)) {
+		                isUniform = false;
+		                break;
+		            }
+		        }
+
+		        if (!isUniform) {
+		            nonUniformBottles++;
+		        }
+		    }
+
+		    return nonUniformBottles;
+		}
 		
 		
 		public static int heuristicMixedColors(ArrayList<ArrayList<String>> state) {
@@ -325,13 +325,13 @@ public class WaterSortSearch extends GenericSearch{
 			heuristicValue = heuristicMixedColors(state);
 		}
 		if (strategy.equals("GR2")) {
-			heuristicValue = heuristicEmptyLayers(state);
+			heuristicValue = heuristicMismatchBottles(state);
 		}
 		if (strategy.equals("AS1")) {
 			heuristicValue = heuristicMixedColors(state);
 		}
 		if (strategy.equals("AS2")) {
-			heuristicValue = heuristicEmptyLayers(state);
+			heuristicValue = heuristicMismatchBottles(state);
 		}
 		Node root = new Node(state, null, null, 0, 0, heuristicValue);
 		WaterSortProblem problem = new WaterSortProblem(state);
@@ -359,7 +359,7 @@ public class WaterSortSearch extends GenericSearch{
 //			System.out.println(result);
 			
 			if (result == true) {
-				System.out.println(current);
+//				System.out.println(current);
 				String resultString = getSolutionPath(current , search.getNumOfExpandedNodes());
 				if (visualize == true) {
 					String visualizeString = search.visualize(current);
@@ -481,7 +481,7 @@ public class WaterSortSearch extends GenericSearch{
 
         long beforeUsedMemory = runtime.totalMemory() - runtime.freeMemory();
 
-        String solution = WaterSortSearch.solve(grid6, "GR1", false);
+        String solution = WaterSortSearch.solve(grid6, "GR2", false);
         long estimatedTime = System.nanoTime() - startTime;
 
         long afterUsedMemory = runtime.totalMemory() - runtime.freeMemory();
