@@ -301,7 +301,13 @@ public class WaterSortSearch extends GenericSearch{
 		                uniqueColorsInBottle.add(color);
 		            }
 		        }
-		        totalDistinctColors += uniqueColorsInBottle.size();
+		        if (uniqueColorsInBottle.size() == 1) {
+		        	totalDistinctColors += 0;
+		        }
+		        else {
+		        	totalDistinctColors += uniqueColorsInBottle.size();
+		        }
+		        
 		    }
 
 		    return totalDistinctColors;
@@ -353,7 +359,7 @@ public class WaterSortSearch extends GenericSearch{
 //			System.out.println(result);
 			
 			if (result == true) {
-//				System.out.println(current);
+				System.out.println(current);
 				String resultString = getSolutionPath(current , search.getNumOfExpandedNodes());
 				if (visualize == true) {
 					String visualizeString = search.visualize(current);
@@ -475,7 +481,7 @@ public class WaterSortSearch extends GenericSearch{
 
         long beforeUsedMemory = runtime.totalMemory() - runtime.freeMemory();
 
-        String solution = WaterSortSearch.solve(grid6, "AS2", false);
+        String solution = WaterSortSearch.solve(grid6, "GR1", false);
         long estimatedTime = System.nanoTime() - startTime;
 
         long afterUsedMemory = runtime.totalMemory() - runtime.freeMemory();
