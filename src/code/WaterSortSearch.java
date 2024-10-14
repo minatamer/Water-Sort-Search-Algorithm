@@ -333,8 +333,16 @@ public class WaterSortSearch extends GenericSearch{
 		WaterSortSearch search = new WaterSortSearch(problem);
 		search.getNodes().add(root);
 		
+		//Incase of ID 
+		int depth = 1 ;
+		
 		while(true){
-			if (search.getNodes().isEmpty()) return "NOSOLUTION";
+			if (search.getNodes().isEmpty() && !strategy.equals("ID")) {
+				return "NOSOLUTION";
+			}
+			else {
+				depth++;
+			}
 			//First: dequeue and repeat loop
 			Node current = search.getNodes().get(0);
 			search.getNodes().remove(0);
@@ -363,9 +371,24 @@ public class WaterSortSearch extends GenericSearch{
 //			System.out.println("expanded nodes:" + expandedNodes);
 			
 			//Fourth: Enqueue according to strategy 
+//			if(strategy.equals("ID")) {
+//	    		for (int i = 0; i<20 ; i++) {
+//	    			for(int j = 0 ; j<i ; j++) {
+//	    				Iterator<Node> iterator = expandedNodes.iterator();
+//	    				while (iterator.hasNext()) {
+//	    				    Node node = iterator.next();
+//	    				    if (problem.getStateSpace().contains(node.getState())) {
+//	    				        iterator.remove(); 
+//	    				    } else {
+//	    				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
+//	    				    }
+//	    				}
+//	    				search.enqueue(expandedNodes, "ID");
+//	    			}
+//	    			
+//	    		}
+//			}
 			if(strategy.equals("ID")) {
-	    		for (int i = 0; i<20 ; i++) {
-	    			for(int j = 0 ; j<i ; j++) {
 	    				Iterator<Node> iterator = expandedNodes.iterator();
 	    				while (iterator.hasNext()) {
 	    				    Node node = iterator.next();
@@ -375,10 +398,7 @@ public class WaterSortSearch extends GenericSearch{
 	    				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
 	    				    }
 	    				}
-	    				search.enqueue(expandedNodes, "ID");
-	    			}
-	    			
-	    		}
+	    				search.enqueue(expandedNodes, "ID" , depth);
 			}
 			else {
 				Iterator<Node> iterator = expandedNodes.iterator();
@@ -390,7 +410,7 @@ public class WaterSortSearch extends GenericSearch{
 				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
 				    }
 				}
-				search.enqueue(expandedNodes, strategy);
+				search.enqueue(expandedNodes, strategy , 0);
 
 			}
 			
@@ -442,10 +462,29 @@ public class WaterSortSearch extends GenericSearch{
 	            "r,o,b,r;" +
 	            "e,e,e,e;" +
 	            "e,e,e,e;";
+	    
+        String grid6 = "6;5;" + "r,g,y,r,b;" + "b,g,r,b,g;" + "g,y,g,y,b;" + "y,y,r,b,r;" + "e,e,e,e,e;"
+                + "e,e,e,e,e;";
 		
 
-	    String solution = WaterSortSearch.solve(grid1, "BF", false);
-	    System.out.print(solution);
+//	    String solution = WaterSortSearch.solve(grid1, "BF", false);
+//	    System.out.print(solution);
+	    
+        long startTime = System.nanoTime();
+        Runtime runtime = Runtime.getRuntime();
+
+        long beforeUsedMemory = runtime.totalMemory() - runtime.freeMemory();
+
+        String solution = WaterSortSearch.solve(grid6, "AS2", false);
+        long estimatedTime = System.nanoTime() - startTime;
+
+        long afterUsedMemory = runtime.totalMemory() - runtime.freeMemory();
+        long memoryUsedByTask = afterUsedMemory - beforeUsedMemory;
+
+        System.out.println("Memory used by task: " + memoryUsedByTask / (1024 * 1024) + " MB");
+
+        System.out.println("Time: " + estimatedTime / 1000000 + "ms");
+        System.out.println("Solution: " + solution);
 	  
 
 		

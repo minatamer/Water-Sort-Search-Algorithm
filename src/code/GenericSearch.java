@@ -50,7 +50,7 @@ public abstract class GenericSearch {
 	
 	abstract ArrayList<Node> expand(String strategy , Node node);
     
-	public void enqueue(ArrayList<Node> expandedNodes , String strategy) {
+	public void enqueue(ArrayList<Node> expandedNodes , String strategy , int depth) {
             switch(strategy) {
             	case "BF":  
             		nodes.addAll(expandedNodes);
@@ -59,7 +59,12 @@ public abstract class GenericSearch {
             		nodes.addAll(0, expandedNodes);
                     break;
             	case "ID":
-            		nodes.addAll(0, expandedNodes);
+//            		nodes.addAll(0, expandedNodes);
+            		 for (Node expandedNode : expandedNodes) {
+            		        if (expandedNode.getDepth() <= depth) {
+            		            nodes.add(0, expandedNode);
+            		        }
+            		    }
             		break;
             	case "UC":
             		nodes.addAll(expandedNodes);
