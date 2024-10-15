@@ -47,18 +47,6 @@ public class WaterSortSearch extends GenericSearch{
 	        return result;
 	    }
 	   
-//	   private int calculateCumulativeCost(Node current, Point operator) {
-//		   ArrayList<ArrayList<String>> newState = deepCopyState((ArrayList<ArrayList<String>>) current.getState());
-//		    ArrayList<String> sourceBottle = newState.get(operator.x);
-//		    ArrayList<String> sinkBottle = newState.get(operator.y);
-//		    int emptyLayersInSink = countEmptyLayers(sinkBottle);
-//		    int pourableLayersInSource = countPourableLayers(sourceBottle);
-//		    int layersToPour = Math.min(emptyLayersInSink, pourableLayersInSource);
-//		    int cost = layersToPour;
-//		    int cumulativeCost = current.getPathCost() + cost;
-//		    return cumulativeCost;
-//	   }
-	   
 	   @Override
 	   Object applyOperator(Node current, Point operator) {
 		    ArrayList<ArrayList<String>> newState = deepCopyState((ArrayList<ArrayList<String>>) current.getState());
@@ -255,19 +243,6 @@ public class WaterSortSearch extends GenericSearch{
 		    return solutionPath.toString();
 		}
 		
-//		public static int heuristicEmptyLayers(ArrayList<ArrayList<String>> state) {
-//		    int emptyLayers = 0;
-//
-//		    for (ArrayList<String> bottle : state) {
-//		        for (String layer : bottle) {
-//		            if (layer.equals("e")) {
-//		                emptyLayers++;
-//		            }
-//		        }
-//		    }
-//
-//		    return emptyLayers;
-//		}
 		
 		public static int heuristicMismatchBottles(ArrayList<ArrayList<String>> state) {
 		    int nonUniformBottles = 0;
@@ -346,13 +321,17 @@ public class WaterSortSearch extends GenericSearch{
 			if (search.getNodes().isEmpty() && !strategy.equals("ID")) {
 				return "NOSOLUTION";
 			}
-			else {
-				depth++;
+			if (search.getNodes().isEmpty() && strategy.equals("ID")) {
+				
+				depth = depth + 1;
+				search.getNodes().clear();
+				search.getProblem().getStateSpace().clear();
+				search.getNodes().add(root);
+//				System.out.println(depth);
 			}
 			//First: dequeue and repeat loop
 			Node current = search.getNodes().get(0);
 			search.getNodes().remove(0);
-//			System.out.println(current);
 			
 			//Second: goal test
 			boolean result = problem.isGoalState(current.getState());
@@ -377,23 +356,6 @@ public class WaterSortSearch extends GenericSearch{
 //			System.out.println("expanded nodes:" + expandedNodes);
 			
 			//Fourth: Enqueue according to strategy 
-//			if(strategy.equals("ID")) {
-//	    		for (int i = 0; i<20 ; i++) {
-//	    			for(int j = 0 ; j<i ; j++) {
-//	    				Iterator<Node> iterator = expandedNodes.iterator();
-//	    				while (iterator.hasNext()) {
-//	    				    Node node = iterator.next();
-//	    				    if (problem.getStateSpace().contains(node.getState())) {
-//	    				        iterator.remove(); 
-//	    				    } else {
-//	    				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
-//	    				    }
-//	    				}
-//	    				search.enqueue(expandedNodes, "ID");
-//	    			}
-//	    			
-//	    		}
-//			}
 			if(strategy.equals("ID")) {
 	    				Iterator<Node> iterator = expandedNodes.iterator();
 	    				while (iterator.hasNext()) {
@@ -404,7 +366,9 @@ public class WaterSortSearch extends GenericSearch{
 	    				        problem.getStateSpace().add((ArrayList<ArrayList<String>>) node.getState());
 	    				    }
 	    				}
+//				System.out.println(depth);
 	    				search.enqueue(expandedNodes, "ID" , depth);
+//	    				System.out.println(search.getNodes());
 			}
 			else {
 				Iterator<Node> iterator = expandedNodes.iterator();
@@ -471,17 +435,13 @@ public class WaterSortSearch extends GenericSearch{
 	    
         String grid6 = "6;5;" + "r,g,y,r,b;" + "b,g,r,b,g;" + "g,y,g,y,b;" + "y,y,r,b,r;" + "e,e,e,e,e;"
                 + "e,e,e,e,e;";
-		
-
-//	    String solution = WaterSortSearch.solve(grid1, "BF", false);
-//	    System.out.print(solution);
 	    
         long startTime = System.nanoTime();
         Runtime runtime = Runtime.getRuntime();
 
         long beforeUsedMemory = runtime.totalMemory() - runtime.freeMemory();
 
-        String solution = WaterSortSearch.solve(grid6, "GR2", false);
+        String solution = WaterSortSearch.solve(grid6, "DF", false);
         long estimatedTime = System.nanoTime() - startTime;
 
         long afterUsedMemory = runtime.totalMemory() - runtime.freeMemory();
